@@ -55,7 +55,6 @@ write_config_file()
 }
 
 ##### CONFIG START
-
 if [ -f "$BOWIE_CLI_CONFIG" ]; then
     source $BOWIE_CLI_CONFIG
 else

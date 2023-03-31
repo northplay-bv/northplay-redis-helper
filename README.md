@@ -1,7 +1,17 @@
-## Northplay Redis Config
+## Northplay Redis Helper
+CLI to help easily run multiple redis nodes, used for development.
 
-### CLI
+![CLI Image](image.png)
 
+## CLI
+### Commands
+CLI commands are as following:
+ `northplay-redis start [START_MODE] [PORT]` -- start a redis node, START_MODE is either "attached" or "screened"
+ `northplay-redis status [PORT]` -- all processes for given port
+ `northplay-redis config` -- show config
+ `northplay-redis config reset` -- reset config
+
+### Install CLI
 To install `northplay-redis-cli`:
 ```shell
 sudo cp northplay-redis-cli /usr/local/bin/northplay-redis-cli
@@ -12,9 +22,10 @@ sudo cp ./redis-base.conf /etc/redis-base.conf
 
 The `redis-users.acl` contains the redis user and redis password.
 
-### Prepare
+## Install
+### Prepare Host
 
-#### sysctl
+Install screen so we can start multiple redis standalone nodes: `sudo apt-get install screen`
 
 Sysctl config set values:
 
@@ -31,19 +42,8 @@ Reload sysctl:
 sudo sysctl -p
 ```
 
-#### screen
-Install screen so we can start multiple redis standalone nodes.
-
-`sudo apt-get install screen`
-
-
-### Redis Install
-
-You can install through package manager or compile sources.
-
-#### Package Manager
-
-Installing from package manager:
+### Install by package manager
+Commands for ubuntu:
 ```shell
 sudo apt install lsb-release
 curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
@@ -52,8 +52,7 @@ sudo apt-get update
 sudo apt-get install redis
 ```
 
-#### Compile Redis
-
+### Compile from source
 Getting and building from source:
 
 ```shell
@@ -68,9 +67,7 @@ sudo make install BUILD_TLS=yes
 ```
 
 ## Laravel Config
-### .env
-
-Example environment:
+### Example `.env`
 ```shell
 REDIS_USERNAME="redis_user_1"
 REDIS_PASSWORD="ffaf11fewfqeqqvVVd203c493aa99"
@@ -80,8 +77,7 @@ REDIS_DB=2
 REDIS_CACHE_DB=3
 
 ```
-
-### config/database.php
+## Example `config/database.php`
 
 ```json
     'redis' => [
