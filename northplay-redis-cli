@@ -1,0 +1,179 @@
+#!/bin/bash
+	#COLORS START
+	CYAN='\033[0;36m'
+	LIGHT_CYAN='\033[1;36m'
+	WHITE='\033[1;37m'
+	NC='\033[0m'
+	#COLORS END
+
+	## CONFIG: Configuration for redis
+	BOWIE_CLI_CONFIG=$HOME/.northplay-redis
+
+helpFunction()
+{
+    echo -e "${NC} northplay-redis is to easily run redis standalone nodes"
+    echo
+    echo -e "${NC} Command syntax:"
+    echo -e "${WHITE} > northplay-redis start [${LIGHT_CYAN}START_MODE${WHITE}] [${LIGHT_CYAN}PORT${WHITE}]"
+    echo -e "${WHITE} > northplay-redis status [PORT]"
+		echo -e "${WHITE} > northplay-redis config"
+		echo -e "${WHITE} > northplay-redis config reset"
+}
+
+
+
+config_wizard_start()
+{
+    if [ -f "$BOWIE_CLI_CONFIG" ]; then
+        echo -e "${NC}Your current config will be overwritten!"
+        echo -e "${WHITE} > starting in 5 seconds.."
+        sleep 5
+    else
+        echo -e "${NC}First run northplay-redis-cli"
+        echo -e "${WHITE} > writing default config to ${BOWIE_CLI_CONFIG}"
+        sleep 3
+    fi
+    echo -e "${WHITE} > running config writer"
+    echo -e "${NC}"
+        write_config_file
+    sleep 1
+		echo -e "${CYAN} Run ${WHITE}northplay-redis-cli config${CYAN} to check your config."
+}
+
+write_config_file()
+{
+        printf '%s\n' \
+        "BASE_CONFIG=/etc/redis-base.conf" \
+        'MAXMEMORY_POLICY=allkeys-lru' \
+        'MAXMEMORY=2000000000' \
+        'IOTHREADS=4' \
+        'USER_ACL_FILE=2000000000' \
+        'MAXMEMORY=2000000000' \
+        'USER_ACL_FILE=/etc/redis-users.acl' \
+        'DEFAULT_PORT=5379' \
+        'DEFAULT_START_MODE=attached' > $HOME/.northplay-redis
+}
+
+##### CONFIG START
+
+if [ -f "$BOWIE_CLI_CONFIG" ]; then
+    source $BOWIE_CLI_CONFIG
+else
+    config_wizard_start
+    source $BOWIE_CLI_CONFIG
+fi
+echo
+if [ -f "$BOWIE_CLI_CONFIG" ]; then
+			echo -e "${CYAN}Config loaded from ~/.northplay-redis"
+else
+			echo -e "${CYAN}Config error parsing from ~/.northplay-redis"
+			exit 1
+fi
+
+config_show()
+{
+    echo -e "${WHITE}$(cat $BOWIE_CLI_CONFIG)"
+}
+##### CON
+
+	if [ "$1" = "" ]; then
+			echo
+			helpFunction
+			echo -e "${CYAN} Error: pass args behind northplay-redis."
+			exit 1
+	fi
+
+	if [[ $1 = "status" ]]; then
+			echo
+			if [ "$2" = "" ]; then
+						echo -e "${CYAN} Error: pass [PORT] behind status in argument."
+			else
+			echo -e "${CYAN} Running lsof -i :${2}"
+			sudo lsof -i :$2
+			sleep 2
+			exit 1
+			fi
+	fi
+
+	if [[ $1 = "config" ]]; then
+			if [ "$2" = "reset" ]; then
+						config_wizard_start
+						exit 1
+			else
+			config_show
+			exit 1
+			fi
+	fi
+
+
+	if [ "$1" != "start" ]; then
+				echo
+				helpFunction
+				echo -e "${CYAN} Error: command not found."
+				exit 1
+	fi
+	
+## START OF RUN SCRIPT
+
+	#FILTER COMMAND INPUT (port, attached/screened)
+	if [ "$2" = "" ]; then
+		START_MODE=${DEFAULT_START_MODE}
+		PORT=${DEFAULT_PORT}
+	else
+		START_MODE=${2}
+		if [ "$3" = "" ]; then
+			PORT=${DEFAULT_PORT}
+		else 
+			PORT=${3}
+		fi
+	fi
+
+	if [ "$2" = "attached" ]; then
+		START_MODE="attached"
+	fi
+
+	if [ "$3" = "screened" ]; then
+		START_MODE="screened"
+	fi
+	#END FILTER COMMAND INPUT
+
+	## ECHO: showing config to front
+		echo
+		echo -e "${LIGHT_CYAN} NORTHPLAY REDIS CONFIG"
+		echo -e "${CYAN} BASE_CONFIG ${NC}$BASE_CONFIG"
+		echo -e "${CYAN} MAXMEMORY_POLICY ${NC}$MAXMEMORY_POLICY"
+		echo -e "${CYAN} MAXMEMORY ${NC}$MAXMEMORY"
+		echo -e "${CYAN} IOTHREADS ${NC}$IOTHREADS"
+		echo -e "${CYAN} USER_ACL_FILE ${NC}$USER_ACL_FILE"
+		echo -e "${CYAN} PORT ${NC}$PORT"
+		echo -e "${CYAN} START_MODE ${NC}$START_MODE"
+		sleep 3
+	## END ECHO
+
+## CONSTRUCT RUN COMMAND:
+RUN_COMMAND="
+redis-server \
+$BASE_CONFIG \
+--port $PORT \
+--maxmemory-policy $MAXMEMORY_POLICY \
+--maxmemory $MAXMEMORY \
+--io-threads $IOTHREADS \
+--aclfile $USER_ACL_FILE \
+"
+echo -e "${LIGHT_CYAN} EXECUTING:"
+echo -e "${WHITE} $RUN_COMMAND"
+echo
+echo
+
+## END CONSTRUCT
+
+	## ACTUAL RUN COMMAND
+		if [ "$START_MODE" = "screened" ]; then
+			screen -d -m $RUN_COMMAND
+			else
+			$RUN_COMMAND
+		fi
+	## END ACTUAL RUN COMMAND
+
+## END SCRIPT
+
