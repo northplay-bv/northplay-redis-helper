@@ -6,10 +6,15 @@ CLI to help easily run multiple redis nodes, used for development.
 ## CLI
 ### Commands
 CLI commands are as following:
- `northplay-redis start [START_MODE] [PORT]` -- start a redis node, START_MODE is either "attached" or "screened"
- `northplay-redis status [PORT]` -- all processes for given port
- `northplay-redis config` -- show config
- `northplay-redis config reset` -- reset config
+
+ - `northplay-redis start [START_MODE] [PORT]` -- start a redis node, START_MODE is either "attached" or "screened"
+
+ - `northplay-redis status [PORT]` -- all processes for given port
+ 
+ - `northplay-redis config` -- show config
+
+ - `northplay-redis config reset` -- reset config
+
 
 ### Install CLI
 To install `northplay-redis-cli`:
@@ -79,7 +84,7 @@ REDIS_CACHE_DB=3
 ```
 ## Example `config/database.php`
 
-```json
+```shell
     'redis' => [
 
         'client' => env('REDIS_CLIENT', 'phpredis'),
