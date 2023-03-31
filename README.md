@@ -27,7 +27,7 @@ sudo cp ./redis-base.conf /etc/redis-base.conf
 
 The `redis-users.acl` contains the redis user and redis password.
 
-## Install
+## Install Redis
 ### Prepare Host
 
 Install screen so we can start multiple redis standalone nodes: `sudo apt-get install screen`
