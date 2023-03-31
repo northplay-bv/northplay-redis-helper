@@ -82,7 +82,7 @@ REDIS_DB=2
 REDIS_CACHE_DB=3
 
 ```
-## Example `config/database.php`
+### Example `config/database.php`
 
 ```shell
     'redis' => [
