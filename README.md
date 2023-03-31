@@ -7,13 +7,17 @@ CLI to help easily run multiple redis nodes, used for development.
 ### Commands
 CLI commands are as following:
 
- - `northplay-redis start [START_MODE] [PORT]` -- start a redis node, START_MODE is either "attached" or "screened"
+#### `northplay-redis-cli start [START_MODE] [PORT]`
+Starts a redis node, `[START_MODE]` is either `attached` or `screened`.
 
- - `northplay-redis status [PORT]` -- all processes for given port
- 
- - `northplay-redis config` -- show config
+#### `northplay-redis-cli status [PORT]`
+Wraps `lsof -i :[PORT]` and shows this to you.
 
- - `northplay-redis config reset` -- reset config
+#### `northplay-redis-cli config`
+Shows current config used, stored in `$HOME/.northplay-redis`.
+
+#### `northplay-redis-cli config reset`
+Resets stored config values in `$HOME/.northplay-redis` to default ones.
 
 
 ### Install CLI
@@ -30,7 +34,11 @@ The `redis-users.acl` contains the redis user and redis password.
 ## Install Redis
 ### Prepare Host
 
-Install screen so we can start multiple redis standalone nodes: `sudo apt-get install screen`
+Install screen so we can start multiple redis standalone nodes: 
+`sudo apt-get install screen`
+
+Install lsof for process status:
+`sudo apt-get install lsof`
 
 Sysctl config set values:
 
